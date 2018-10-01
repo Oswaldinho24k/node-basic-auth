@@ -37,4 +37,25 @@ router.post('/signup', (req, res, next)=>{
     })
 })
 
+
+//login routes
+
+router.get('/login', (req, res, next)=>{
+  res.render('auth/login')
+})
+
+router.post('/login', (req, res, next)=>{
+  const {username, password} = req.body
+  User.findOne({username:username})
+    .then(user=>{
+      if(!user)return res.render('auth/login', {error:'Este usuario no existe'})
+      if(bcrypt.compareSync(password, user.password)){
+        req.session.currentUser = user
+        res.redirect('/profile') 
+      }else{ 
+        res.render('auth/login',{error:'No seas tracala, este no eres tú'})
+      }
+    })
+})
+
 module.exports = router
